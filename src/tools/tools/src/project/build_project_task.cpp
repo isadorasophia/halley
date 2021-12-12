@@ -9,26 +9,53 @@
 
 using namespace Halley;
 
-BuildProjectTask::BuildProjectTask(Project& project)
-	: Task("Building project", true, true)
-	, project(project)
+// Get the path to the Halley build script, which will be used to automatically build the project through the editor.
+//
+Path getHalleyBuildScriptPath(const Path& halleyRootPath)
 {
-	const String scriptName = [] ()
+	const String scriptName = []()
 	{
 		if constexpr (getPlatform() == GamePlatform::Windows) {
 			return "build_project_win.bat";
 			//return "build_project_win_ninja.bat";
-		} else if constexpr (getPlatform() == GamePlatform::MacOS) {
+		}
+		else if constexpr (getPlatform() == GamePlatform::MacOS) {
 			return "build_project_mac.sh";
-		} else if constexpr (getPlatform() == GamePlatform::Linux) {
+		}
+		else if constexpr (getPlatform() == GamePlatform::Linux) {
 			return "build_project_linux.sh";
-		} else {
+		}
+		else {
 			throw Exception("No project build script available for this platform.", HalleyExceptions::Tools);
 		}
 	}();
-	const auto buildScript = project.getHalleyRootPath() / "scripts" / scriptName;
+
+	return halleyRootPath / "scripts" / scriptName;
+}
+
+// Get the path to the game build script, which will be used to generate any build files through the editor.
+//
+Path getGenerateBuildScriptPath(const Path& gameRootPath)
+{
+	const Path candidatePath = gameRootPath / "scripts" / "build.ps1"; // TODO: get candidate path through the properties file?
+	if (OS::get().doesPathExist(candidatePath))
+	{
+		return candidatePath;
+	}
+
+	return "";
+}
+
+BuildProjectTask::BuildProjectTask(Project& project)
+	: Task("Building project", true, true)
+	, project(project)
+{
+	const auto buildSolutionScript = getHalleyBuildScriptPath(project.getHalleyRootPath());
+	const auto generateSolutionScript = getGenerateBuildScriptPath(project.getRootPath());
+
 	const String buildConfig = Debug::isDebug() ? "Debug" : "Release";
-	command = "\"" + buildScript + "\" \"" + project.getRootPath() + "\" " + project.getProperties().getBinName() + " " + buildConfig;
+
+	command = "\"" + buildSolutionScript + "\" \"" + generateSolutionScript + "\" \"" + project.getRootPath() + "\" " + project.getProperties().getBinName() + " " + buildConfig;
 }
 
 void BuildProjectTask::run()

@@ -76,6 +76,8 @@ namespace Halley {
 		virtual void atomicWriteFile(const Path& path, gsl::span<const gsl::byte> data, std::optional<Path> backupOldVersionPath = {});
 		virtual std::vector<Path> enumerateDirectory(const Path& path);
 
+		virtual bool doesPathExist(const Path& path);
+
 		virtual void setConsoleColor(int foreground, int background);
 		virtual int runCommand(String command, String cwd = "", ILoggerSink* sink = nullptr);
 		virtual Future<int> runCommandAsync(const String& string, const String& cwd = "", ILoggerSink* sink = nullptr);

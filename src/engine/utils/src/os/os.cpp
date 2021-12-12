@@ -122,6 +122,11 @@ std::vector<Path> OS::enumerateDirectory(const Path& path)
 	return {};
 }
 
+bool OS::doesPathExist(const Path& path)
+{
+	return false;
+}
+
 void OS::setConsoleColor(int, int)
 {
 }

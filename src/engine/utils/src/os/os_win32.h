@@ -47,6 +47,8 @@ namespace Halley {
 		void atomicWriteFile(const Path& path, gsl::span<const gsl::byte> data, std::optional<Path> backupOldVersionPath) override;
 		std::vector<Path> enumerateDirectory(const Path& path) override;
 
+		bool doesPathExist(const Path& path) override;
+
 		void displayError(const std::string& cs) override;
 		void onWindowCreated(void* window) override;
 
@@ -63,6 +65,8 @@ namespace Halley {
 	private:
 		String runWMIQuery(String query, String parameter) const;
 		void loadWindowIcon(HWND hwnd);
+
+		StringUTF16 convertPathToString(const Path& path) const;
 
 	private:
 		IWbemLocator *pLoc;

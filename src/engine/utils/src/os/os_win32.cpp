@@ -387,11 +387,11 @@ static void writeFile(const wchar_t* str, gsl::span<const gsl::byte> data)
 
 void OSWin32::atomicWriteFile(const Path& path, gsl::span<const gsl::byte> data, std::optional<Path> backupOldVersionPath)
 {
-	auto dstPath = path.getString().replaceAll("/", "\\").getUTF16();
+	auto dstPath = convertPathToString(path);
 	if (PathFileExistsW(dstPath.c_str())) {
 		auto temp = path.replaceExtension(path.getExtension() + ".tmp");
-		auto tempPath = temp.getString().replaceAll("/", "\\").getUTF16();
-		auto backupPath = backupOldVersionPath ? backupOldVersionPath->getString().replaceAll("/", "\\").getUTF16() : StringUTF16();
+		auto tempPath = convertPathToString(temp);
+		auto backupPath = backupOldVersionPath ? convertPathToString(backupOldVersionPath.value()) : StringUTF16();
 		writeFile(tempPath.c_str(), data);
 
 		const int result = ReplaceFileW(dstPath.c_str(), tempPath.c_str(), backupOldVersionPath ? backupPath.c_str() : nullptr, REPLACEFILE_IGNORE_MERGE_ERRORS, nullptr, nullptr);
@@ -437,6 +437,13 @@ std::vector<Path> OSWin32::enumerateDirectory(const Path& rootPath)
 	}
 
 	return result;
+}
+
+bool OSWin32::doesPathExist(const Path& path)
+{
+	const StringUTF16 strPath = convertPathToString(path); 
+	
+	return PathFileExistsW(strPath.c_str());
 }
 
 void OSWin32::displayError(const std::string& cs)
@@ -788,6 +795,11 @@ Future<std::optional<Path>> OSWin32::openFileChooser(FileChooserParameters param
 	});
 
 	return future;
+}
+
+StringUTF16 OSWin32::convertPathToString(const Path& path) const
+{
+	return path.getString().replaceAll("/", "\\").getUTF16();
 }
 
 #endif
