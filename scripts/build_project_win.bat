@@ -21,14 +21,15 @@ set exeName="%~2.exe"
 taskkill /IM %exeName% /F >nul 2>nul
 
 IF NOT EXIST %slnName% (
-cmake -G "Visual Studio 16 2019" ^
+cmake -G "Visual Studio 17 2022" ^
     -A x64 ^
     -DHALLEY_PATH=../halley ^
     -DBUILD_HALLEY_TOOLS=0 ^
     -DBUILD_HALLEY_TESTS=0 ^
-    -DCMAKE_INCLUDE_PATH="lib\include" ^
-    -DCMAKE_LIBRARY_PATH="lib\windows64" ^
-    -DBOOST_ROOT="lib\boost" ^
+    -DCMAKE_PREFIX_PATH="halley_deps" ^
+    -DCMAKE_INCLUDE_PATH="halley_deps\include" ^
+    -DCMAKE_LIBRARY_PATH="halley_deps\lib" ^
+    -DBOOST_ROOT="halley_deps\Boost" ^
     -DBoost_USE_STATIC_LIBS=1 ^
     .. || exit /b 1
 )

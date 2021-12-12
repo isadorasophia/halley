@@ -87,7 +87,7 @@ void ProjectProperties::loadDefaults()
 {
 	uuid = UUID::generate();
 	name = "Halley Project";
-	assetPackManifest = "halley_project/asset_manifest.yaml";
+	assetPackManifest = "template/halley_project/asset_manifest.yaml";
 	binName = "";
 	importByExtension = false;
 	defaultZoom = 1.0f;
