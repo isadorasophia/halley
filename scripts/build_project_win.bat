@@ -32,9 +32,8 @@ if not exist %slnName% (
     if exist %generateBuildScript% (
         echo Generating build files with %generateBuildScript%.
 
-        %generateBuildScript%
-    )
-    else if (
+        PowerShell %generateBuildScript%
+    ) else (
         echo Generating build files through the default Halley command.
 
         @rem Use default command line if no custom script is set.
