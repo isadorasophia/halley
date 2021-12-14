@@ -93,8 +93,20 @@ void AssetEditorWindow::loadAsset(const String& name, std::optional<AssetType> t
 	getWidget("metadataPanel")->setActive(showMetadataEditor);
 }
 
+// Returns the current asset path.
+// Warning: this will tentatively check if the asset path exists, ideally we should refactor this
+// so an asset has its associated file path?
 Path AssetEditorWindow::getCurrentAssetPath() const
 {
+	const Path& sharedSrcAssetPath = project.getSharedAssetsSrcPath() / loadedAsset;
+
+	// Is this a shared asset?
+	if (OS::get().doesPathExist(sharedSrcAssetPath))
+	{
+		return sharedSrcAssetPath;
+	}
+
+	// Return default project assets path.
 	return project.getAssetsSrcPath() / loadedAsset;
 }
 
